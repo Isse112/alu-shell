@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# This init script is managing the manage_my_process script (start, stop and restart)
+pid_file="/var/run/my_process.pid"
+script_dir="$(dirname "$0")"
+
+start_process()
+{
+    "$script_dir/manage_my_process" > /dev/null 2>&1 &
+    echo "$!" > "$pid_file"
+}
+
+stop_process()
+{
+    kill "$(cat "$pid_file")"
+    rm "$pid_file"
+}
+
+case "$1" in
+    start)
+        start_process
+        echo "manage_my_process started"
+        ;;
+    stop)
+        stop_process
+        echo "manage_my_process stopped"
+        ;;
+    restart)
+        stop_process
+        start_process
+        echo "manage_my_process restarted"
+        ;;
+    *)
+        echo "Usage: manage_my_process {start|stop|restart}"
+        ;;
+esac
